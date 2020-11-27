@@ -4,8 +4,6 @@
 
 ## 安装
 
-安装最后版本
-
 ```bash
 $ composer create-project weiyixmm/yaf simple-yaf 1.0.0
 ```

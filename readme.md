@@ -15,7 +15,7 @@
 > 扩展安装请注意相对应的PHP版本要求，框架并未严格要求PHP版本，最低版本要求为PHP 7以上。
 
 - [Yaf](https://pecl.php.net/package/yaf) 扩展
-- [Seaslog](https://pecl.php.net/package/seaslog) 扩展
+- [Seaslog](https://pecl.php.net/package/seaslog) 扩展(2.*)
 
 ## 安装
 

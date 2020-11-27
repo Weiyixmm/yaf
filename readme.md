@@ -1,4 +1,3 @@
-# Readme
 
 # Simple-yaf Framework for PHP 
 
@@ -15,7 +14,7 @@
 ## 安装
 
 ```bash
-$ composer create-project weiyixmm/yaf simple-yaf [version(1.0.0)]
+$ composer create-project weiyixmm/yaf simple-yaf [1.0.0]
 ```
 
 ## 目录结构(2.*)

@@ -11,6 +11,12 @@
 #### Version 2.*
 > 根据源生Yaf框架，进行了简单的封装，未引入composer包(引入composer，会影响框架性能，后续版本会引入)。数据库类包使用Medoo，日志使用Seaslog扩展。
 
+## 要求
+> 扩展安装请注意相对应的PHP版本要求，框架并未严格要求PHP版本，最低版本要求为PHP 7以上。
+
+- [Yaf](https://pecl.php.net/package/yaf) 扩展
+- [Seaslog](https://pecl.php.net/package/seaslog) 扩展
+
 ## 安装
 
 ```bash

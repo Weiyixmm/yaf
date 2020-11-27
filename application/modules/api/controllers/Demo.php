@@ -26,10 +26,11 @@ class DemoController extends BaseApi
 
     /**
      * 使用示例
-     * http://localhost/api/Demo/showUsage
+     * http://localhost/api/Demo/showUsage/id/1
+     * @param int $id
      * @author liyw<2020-11-25>
      */
-    public function showUsageAction()
+    public function showUsageAction($id = 634482545)
     {
         # 使用全局方法获取参数(父类方法是封装的全局方法，使用方式一样)
         $getParam = request()->input('id', null, 'int', true, 'invalid id.');
@@ -44,7 +45,7 @@ class DemoController extends BaseApi
         $getRawParam = $this->getParam('json.id', 0, 'int');
 
         # service 使用方法
-        $this->_demoService->id = 1;
+        $this->_demoService->id = $id;
         $res = $this->_demoService->demo();
 
         # 全局方法，响应数据

@@ -1,6 +1,8 @@
+# Readme
+
 # Simple-yaf Framework for PHP 
 
-根据源生Yaf框架，进行了简单的封装，未引入composer包(引入composer，会影响框架性能，后续版本会引入)。
+根据源生Yaf框架，封装的框架。
 
 ## 版本
 

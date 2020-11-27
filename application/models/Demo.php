@@ -21,6 +21,7 @@ class DemoModel
 
         # 中途报错方法
         # abort(ErrorCode::$FAIL);
+        # response()->outputError(ErrorCode::$FAIL);
 
         return [
             'id'   => $id,

@@ -2,13 +2,21 @@
 
 根据源生Yaf框架，进行了简单的封装，未引入composer包(引入composer，会影响框架性能，后续版本会引入)。
 
+## 版本
+
+#### Version 1.0.0
+> 源生Yaf框架(使用yaf_cg生成)，未做任何修改。
+
+#### Version 2.*
+> 根据源生Yaf框架，进行了简单的封装，未引入composer包(引入composer，会影响框架性能，后续版本会引入)。数据库类包使用Medoo，日志使用Seaslog扩展。
+
 ## 安装
 
 ```bash
-$ composer create-project weiyixmm/yaf simple-yaf 2.*
+$ composer create-project weiyixmm/yaf simple-yaf [version(1.0.0)]
 ```
 
-## 目录结构
+## 目录结构(2.*)
 
 ```
 + application
@@ -49,4 +57,4 @@ $ composer create-project weiyixmm/yaf simple-yaf 2.*
 ```
 
 ## 使用
-具体使用方法，请参照[Yaf 手册](https://www.laruence.com/manual/index.html)
+框架内有使用示例，关于Yaf框架，请参照[Yaf 手册](https://www.laruence.com/manual/index.html)

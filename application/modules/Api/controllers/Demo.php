@@ -105,6 +105,17 @@ class DemoController extends BaseApi
     }
 
     /**
+     * redis使用示例
+     * @author liyw<2021-12-30>
+     */
+    public function showUsageForRedisAction()
+    {
+        $res = $this->_demoService->showUsageForRedis();
+
+        $this->outputSuccess($res);
+    }
+
+    /**
      * log使用方法示例
      * 更多Seaslog使用方法，请参考扩展
      * @link   https://www.php.net/manual/zh/book.seaslog.php

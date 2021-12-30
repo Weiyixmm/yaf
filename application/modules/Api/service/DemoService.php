@@ -9,6 +9,7 @@
 
 namespace app\modules\Api\service;
 
+use app\library\redis\Redis;
 use DemoModel;
 
 class DemoService
@@ -30,6 +31,18 @@ class DemoService
     public function showUsageForSelectDB()
     {
         return $this->_demoModel->showUsageForSelectDB($this->id);
+    }
+
+    /**
+     * redis使用示例
+     * @author liyw<2021-12-30>
+     * @return false|mixed|string
+     */
+    public function showUsageForRedis()
+    {
+        Redis::getRedis()->set('redis_key', 'redis_value', ['EX' => 60]);
+
+        return Redis::getRedis()->get('redis_key');
     }
 
     /**

@@ -26,11 +26,4 @@ if (!empty($json = ($argv[2] ?? '')) && !$param = json_decode($json, true)) {
 
 $nameSpaceClass = "app\\cli\\" . implode('\\', $parseClass);
 
-# 线上环境不打印错误
-if (\Yaf\ENVIRON == 'product' && config('display_errors')) {
-    error_reporting(0);
-} else {
-    error_reporting(E_ALL & ~E_WARNING);
-}
-
 $application->bootstrap()->execute([new $nameSpaceClass(), $method], $param ?? []);

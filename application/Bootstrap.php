@@ -1,5 +1,7 @@
 <?php
 
+use app\library\core\Request;
+
 /**
  * @name Bootstrap
  * @author weiyi
@@ -10,6 +12,13 @@
  */
 class Bootstrap extends \Yaf\Bootstrap_Abstract
 {
+    public function _initConfig()
+    {
+        //把配置保存起来
+        $arrConfig = \Yaf\Application::app()->getConfig();
+        \Yaf\Registry::set('config', $arrConfig);
+    }
+
     public function _initSeaslog()
     {
         \Seaslog::setBasePath(\Yaf\Application::app()->getConfig()->get('log.path'));
@@ -19,15 +28,9 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract
     public function _initAutoload()
     {
         \Yaf\Loader::getInstance()->registerLocalNamespace(
-            '\app', \Yaf\Application::app()->getConfig()->get('application.directory')
+            '\app',
+            \Yaf\Application::app()->getConfig()->get('application.directory')
         );
-    }
-
-    public function _initConfig()
-    {
-        //把配置保存起来
-        $arrConfig = \Yaf\Application::app()->getConfig();
-        \Yaf\Registry::set('config', $arrConfig);
     }
 
     public function _initPlugin(\Yaf\Dispatcher $dispatcher)
@@ -56,9 +59,13 @@ class Bootstrap extends \Yaf\Bootstrap_Abstract
     }
 }
 
+# 定义时区
+date_default_timezone_set("PRC");
 # 定义常量
+define('INIT_TIME', microtime(true));
 define('NOW', time());
-define('NOW_DATETIME', date('Y-m-d H:i:s'));
+define('NOW_DATETIME', date('Y-m-d H:i:s', NOW));
+define('NOW_DATE', date('Y-m-d', strtotime(NOW_DATETIME)));
 
 # 全局方法
 if (!function_exists('app')) {
@@ -78,7 +85,7 @@ if (!function_exists('registory')) {
      * @param string $obj_name 已经注册的对象实例名称
      * @return mixed
      */
-    function registry($obj_name)
+    function registry(string $obj_name)
     {
         return $obj_name ? \Yaf\Registry::get($obj_name) : '';
     }
@@ -90,16 +97,20 @@ if (!function_exists('config')) {
      * @param string $config 配置文件Key
      * @return mixed
      */
-    function config($config)
+    function config(string $config)
     {
-        return registry('config')->get($config);
+        if (is_object($return = registry('config')->get($config))) {
+            return $return->toarray();
+        } else {
+            return $return;
+        }
     }
 }
 
 if (!function_exists('request')) {
     /**
      * 返回请求实例
-     * @return \App\Library\Core\Request
+     * @return app\library\core\Request
      */
     function request()
     {
@@ -110,7 +121,7 @@ if (!function_exists('request')) {
 if (!function_exists('resopnse')) {
     /**
      * 返回响应类实例
-     * @return \App\Library\Core\Response
+     * @return app\library\core\Response
      */
     function response()
     {
@@ -118,14 +129,14 @@ if (!function_exists('resopnse')) {
     }
 }
 
-if (!function_exists('abort')) {
+if (!function_exists('outputError')) {
     /**
      * 响应错误
-     * @param array  $error
-     * @param string $data
+     * @param array|string $responseStatus
+     * @param string       $data
      */
-    function abort($error = [], $data = '')
+    function outputError($responseStatus = [], string $data = '')
     {
-        response()->outputError($error, $data);
+        response()->outputError($responseStatus, $data);
     }
 }

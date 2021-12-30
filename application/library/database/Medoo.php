@@ -14,6 +14,7 @@ use PDO;
 use Exception;
 use PDOException;
 use InvalidArgumentException;
+use Yaf\Bootstrap_Abstract;
 
 class Raw
 {
@@ -21,7 +22,7 @@ class Raw
     public $value;
 }
 
-class Medoo
+class Medoo extends Bootstrap_Abstract
 {
     public $pdo;
 
@@ -43,8 +44,11 @@ class Medoo
 
     protected $errorInfo = null;
 
-    public function __construct(array $options)
+    public function __construct(array $options = [])
     {
+        # 使用配置文件中的数据库配置
+        $options = array_merge(config('database'), $options);
+
         if (isset($options['database_type'])) {
             $this->type = strtolower($options['database_type']);
 
@@ -507,7 +511,8 @@ class Medoo
 
                 preg_match(
                     '/(?<column>[a-zA-Z0-9_\.]+)(?:\s*\((?<alias>[a-zA-Z0-9_]+)\))?(?:\s*\[(?<type>(?:String|Bool|Int|Number|Object|JSON))\])?/i',
-                    $value, $match
+                    $value,
+                    $match
                 );
 
                 if (!empty($match['alias'])) {
@@ -581,7 +586,9 @@ class Medoo
                     $this->columnQuote($match[1]) . ' ' . $match['operator'] . ' ' . $this->columnQuote($match[3]);
             } else {
                 preg_match(
-                    '/([a-zA-Z0-9_\.]+)(\[(?<operator>\>\=?|\<\=?|\!|\<\>|\>\<|\!?~|REGEXP)\])?/i', $key, $match
+                    '/([a-zA-Z0-9_\.]+)(\[(?<operator>\>\=?|\<\=?|\!|\<\>|\>\<|\!?~|REGEXP)\])?/i',
+                    $key,
+                    $match
                 );
                 $column = $this->columnQuote($match[1]);
 
@@ -731,7 +738,8 @@ class Medoo
             $where_keys = array_keys($where);
 
             $conditions = array_diff_key(
-                $where, array_flip(
+                $where,
+                array_flip(
                     ['GROUP', 'ORDER', 'HAVING', 'LIMIT', 'LIKE', 'MATCH']
                 )
             );
@@ -762,7 +770,7 @@ class Medoo
                     $map[$map_key] = [$MATCH['keyword'], PDO::PARAM_STR];
 
                     $where_clause .= ($where_clause !== '' ? ' AND ' : ' WHERE') . ' MATCH (' . $columns .
-                        ') AGAINST (' . $map_key . $mode . ')';
+                                     ') AGAINST (' . $map_key . $mode . ')';
                 }
             }
 
@@ -933,7 +941,8 @@ class Medoo
 
         foreach ($join as $sub_table => $relation) {
             preg_match(
-                '/(\[(?<join>\<\>?|\>\<?)\])?(?<table>[a-zA-Z0-9_]+)\s?(\((?<alias>[a-zA-Z0-9_]+)\))?/', $sub_table,
+                '/(\[(?<join>\<\>?|\>\<?)\])?(?<table>[a-zA-Z0-9_]+)\s?(\((?<alias>[a-zA-Z0-9_]+)\))?/',
+                $sub_table,
                 $match
             );
 
@@ -951,18 +960,18 @@ class Medoo
 
                         foreach ($relation as $key => $value) {
                             $joins[] = (
-                                strpos($key, '.') > 0
-                                    ?
-                                    // For ['tableB.column' => 'column']
-                                    $this->columnQuote($key)
-                                    :
+                                       strpos($key, '.') > 0
+                                           ?
+                                           // For ['tableB.column' => 'column']
+                                           $this->columnQuote($key)
+                                           :
 
-                                    // For ['column1' => 'column2']
-                                    $table . '."' . $key . '"'
-                                ) .
-                                ' = ' .
-                                $this->tableQuote(isset($match['alias']) ? $match['alias'] : $match['table']) . '."' .
-                                $value . '"';
+                                           // For ['column1' => 'column2']
+                                           $table . '."' . $key . '"'
+                                       ) .
+                                       ' = ' .
+                                       $this->tableQuote(isset($match['alias']) ? $match['alias'] : $match['table']) . '."' .
+                                       $value . '"';
                         }
 
                         $relation = 'ON ' . implode(' AND ', $joins);
@@ -992,7 +1001,8 @@ class Medoo
             if (is_int($key)) {
                 preg_match(
                     '/([a-zA-Z0-9_]+\.)?(?<column>[a-zA-Z0-9_]+)(?:\s*\((?<alias>[a-zA-Z0-9_]+)\))?(?:\s*\[(?<type>(?:String|Bool|Int|Number|Object|JSON))\])?/i',
-                    $value, $key_match
+                    $value,
+                    $key_match
                 );
 
                 $column_key = !empty($key_match['alias'])
@@ -1008,7 +1018,8 @@ class Medoo
                 }
             } elseif ($this->isRaw($value)) {
                 preg_match(
-                    '/([a-zA-Z0-9_]+\.)?(?<column>[a-zA-Z0-9_]+)(\s*\[(?<type>(String|Bool|Int|Number))\])?/i', $key,
+                    '/([a-zA-Z0-9_]+\.)?(?<column>[a-zA-Z0-9_]+)(\s*\[(?<type>(String|Bool|Int|Number))\])?/i',
+                    $key,
                     $key_match
                 );
 
@@ -1279,7 +1290,8 @@ class Medoo
 
         return $this->exec(
             'INSERT INTO ' . $this->tableQuote($table) . ' (' . implode(', ', $fields) . ') VALUES ' .
-            implode(', ', $stack), $map
+            implode(', ', $stack),
+            $map
         );
     }
 
@@ -1376,7 +1388,8 @@ class Medoo
         if (!empty($stack)) {
             return $this->exec(
                 'UPDATE ' . $this->tableQuote($table) . ' SET ' . implode(', ', $stack) .
-                $this->whereClause($where, $map), $map
+                $this->whereClause($where, $map),
+                $map
             );
         }
 
@@ -1435,7 +1448,8 @@ class Medoo
                 $this->exec($this->selectContext($table, $map, $join, $column, $where, Medoo::raw('TOP 1 1')), $map);
         } else {
             $query = $this->exec(
-                'SELECT EXISTS(' . $this->selectContext($table, $map, $join, $column, $where, 1) . ')', $map
+                'SELECT EXISTS(' . $this->selectContext($table, $map, $join, $column, $where, 1) . ')',
+                $map
             );
         }
 

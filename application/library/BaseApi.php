@@ -25,31 +25,41 @@ class BaseApi extends \Yaf\Controller_Abstract
      * @param string $msg
      * @return bool|mixed|null
      */
-    public function getParam($name = '', $default = null, $type = null, $isMust = false, $msg = '')
+    public function input(string $name = '', $default = null, $type = null, bool $isMust = false, string $msg = '')
     {
         return request()->input($name, $default, $type, $isMust, $msg);
     }
 
     /**
      * 响应成功结果
-     * @param        $data
-     * @param string $msg
-     * @param int    $code
-     * @param array  $header
+     * @param              $data
+     * @param array|string $responseStatus
+     * @param array        $header
      */
-    public function outPutSuccess($data, $msg = 'success', $code = 200, $header = [])
+    public function outputSuccess($data, $responseStatus = [], array $header = [])
     {
-        response()->outputSuccess($data, $msg, $code, $header);
+        response()->outputSuccess($data, $responseStatus, $header);
     }
 
     /**
      * 响应错误结果
-     * @param array  $error
-     * @param string $data
-     * @param array  $header
+     * @param array|string $responseStatus
+     * @param string       $data
+     * @param array        $header
      */
-    public function outPutError($error = [], $data = '', $header = [])
+    public function outputError($responseStatus, string $data = '', array $header = [])
     {
-        response()->outputError($error, $data, $header);
+        response()->outputError($responseStatus, $data, $header);
+    }
+
+    /**
+     * 输出正常数据
+     * @author liyw<2021-03-25>
+     * @param       $data
+     * @param array $header
+     */
+    public function output($data, array $header = [])
+    {
+        response()->output($data, $header);
     }
 }

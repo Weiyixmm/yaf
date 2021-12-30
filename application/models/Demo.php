@@ -4,28 +4,36 @@
  * User: liyw<634482545@qq.com>
  * Date: 2020-11-18
  * File: Demo.php
- * Desc:
+ * Desc: 示例表
  */
 
-use app\library\database\BaseDB;
-use app\library\core\ErrorCode;
-
-class DemoModel
+class DemoModel extends \app\library\database\Medoo
 {
     protected $_table = 'wxuser';
 
-    public function getUserInfo($id)
+    public function __construct(array $options = [])
+    {
+        parent::__construct($options);
+    }
+
+    /**
+     * 查询数据库使用示例
+     * @author liyw<2021-12-30>
+     * @param $id
+     * @return false|mixed|void
+     */
+    public function showUsageForSelectDB($id)
     {
         # 数据库查询方法
-        # return BaseDB::getInstance()->get($this->_table, '*', ['userid' => $id]);
+        return $this->get($this->_table, '*', ['userid' => $id]);
+    }
 
-        # 中途报错方法
-        # abort(ErrorCode::$FAIL);
-        # response()->outputError(ErrorCode::$FAIL);
-
-        return [
-            'id'   => $id,
-            'name' => 'weiyi',
-        ];
+    /**
+     * Model中途报错
+     * @author liyw<2021-12-30>
+     */
+    public function modelOutputError()
+    {
+        outputError('Model中途报错');
     }
 }

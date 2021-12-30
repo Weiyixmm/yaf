@@ -23,20 +23,22 @@ class Response
 
     /**
      * 响应错误结果
-     * @param array  $error
-     * @param string $data
-     * @param array  $header
+     * @param array|string $responseStatus
+     * @param string       $data
+     * @param array        $header
      */
-    public function outputError($error = [], $data = '', $header = [])
+    public function outputError($responseStatus, string $data = '', array $header = [])
     {
+        $responseStatus = is_array($responseStatus) ? $responseStatus : [ResponseStatus::NORMAL_ERROR_CODE, $responseStatus];
+
         $out = [
-            'code' => $error[0] ?? 0,
-            'msg'  => $error[1] ?? 'fail',
-            'time' => NOW,
-            'data' => is_bool($data) ? $data : ($data ?: []),
+            'statusCode' => $responseStatus[0] ?? ResponseStatus::NORMAL_ERROR_CODE,
+            'msg'        => $responseStatus[1] ?? ResponseStatus::NORMAL_ERROR_MSG,
+            'time'       => NOW,
+            'data'       => is_bool($data) ? $data : ($data ?: []),
         ];
 
-        $this->setHeader($header);
+        $this->setHeaders($header);
 
         $this->_response->setBody(json_encode($out, JSON_UNESCAPED_UNICODE));
         $this->_response->response();
@@ -45,37 +47,62 @@ class Response
 
     /**
      * 响应成功结果
-     * @param        $data
-     * @param string $msg
-     * @param int    $code
-     * @param array  $header
+     * @param              $data
+     * @param array|string $responseStatus
+     * @param array        $header
      */
-    public function outputSuccess($data, $msg = 'success', $code = 200, $header = [])
+    public function outputSuccess($data, $responseStatus, array $header = [])
     {
+        $responseStatus = is_array($responseStatus) ? $responseStatus : [ResponseStatus::NORMAL_SUCCESS_CODE, $responseStatus];
+
         $out = [
-            'code' => $code,
-            'msg'  => $msg,
-            'time' => NOW,
-            'data' => is_bool($data) ? $data : ($data ?: []),
+            'statusCode' => $responseStatus[0] ?? ResponseStatus::NORMAL_SUCCESS_CODE,
+            'msg'        => $responseStatus[1] ?? ResponseStatus::NORMAL_SUCCESS_MSG,
+            'time'       => NOW,
+            'data'       => is_bool($data) ? $data : ($data ?: []),
         ];
 
-        $this->setHeader($header);
+        $this->setHeaders($header);
 
         $this->_response->setBody(json_encode($out, JSON_UNESCAPED_UNICODE));
         $this->_response->response();
+        exit();
+    }
+
+    /**
+     * @author liyw<2021-03-25>
+     * @param       $data
+     * @param array $header
+     */
+    public function output($data, array $header = [])
+    {
+        # 存在header，设置header
+        if ($header) {
+            $this->setHeaders($header);
+        }
+
+        $this->_response->setBody($data);
+        $this->_response->response();
+        exit();
     }
 
     /**
      * 设置Header
      * @param array $header
      */
-    private function setHeader($header = [])
+    private function setHeaders(array $header = [])
     {
         if (!empty($header)) {
             foreach ($header as $type => $value) {
                 $this->_response->setHeader($type, $value);
             }
         } else {
+            $this->_response->setHeader(
+                'Access-Control-Allow-Headers',
+                'Origin, X-Requested-With, Content-Type, Accept'
+            );
+            $this->_response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT');
+            $this->_response->setHeader('Access-Control-Allow-Origin', '*');
             $this->_response->setHeader('Content-Type', 'application/json; charset=utf-8');
         }
     }

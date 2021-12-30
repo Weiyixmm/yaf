@@ -31,7 +31,7 @@ class Request
      * @param string $msg     string|array(string: 错误信息，array: ['errorcode', 'errormsg'])
      * @return bool|mixed|null
      */
-    public function input($name = '', $default = null, $type = null, $isMust = false, $msg = '')
+    public function input(string $name = '', $default = null, $type = null, bool $isMust = false, string $msg = '')
     {
         if (FALSE === strpos($name, '.')) {
             $param = $this->_request->get($name, $default);
@@ -41,7 +41,7 @@ class Request
             $rawVal = $this->_request->getRaw();
 
             switch (strtolower($rawType)) {
-                default:
+                default :
                 case 'json':
                     $parseRaw = json_decode($rawVal, true);
                     break;
@@ -53,38 +53,37 @@ class Request
             if (empty($rawName)) {
                 return $parseRaw ?? [];
             } else {
-                $param = $parseRaw[$rawName] ?? $default;
+                $param = ($parseRaw[$rawName] ?? '') ?: $default;
             }
         }
 
         if ($isMust && is_null($param ?? null)) {
             if (empty($msg)) {
-                abort(ErrorCode::$INPUT_ERROR);
+                outputError([ResponseStatus::INPUT_ERROR_CODE, ResponseStatus::INPUT_ERROR_MSG]);
             } elseif (is_array($msg)) {
-                abort($msg);
+                outputError($msg);
             } else {
-                abort([ErrorCode::$INPUT_ERROR[0], $msg]);
+                outputError([ResponseStatus::INPUT_ERROR_CODE, $msg]);
             }
         }
 
         switch ($type) {
             default:
-                $translationParam = $param;
                 break;
             case 'string':
-                $translationParam = settype($param, 'string');
+                settype($param, 'string');
                 break;
             case 'int':
-                $translationParam = settype($param, 'int');
+                settype($param, 'int');
                 break;
             case 'float':
-                $translationParam = settype($param, 'float');
+                settype($param, 'float');
                 break;
             case 'bool':
-                $translationParam = settype($param, 'bool');
+                settype($param, 'bool');
                 break;
         }
 
-        return $translationParam;
+        return $param;
     }
 }

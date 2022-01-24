@@ -116,6 +116,16 @@ class DemoController extends BaseApi
     }
 
     /**
+     * composer包加载
+     * @author liyw<2022-01-24>
+     */
+    public function showUsageForComposerAction()
+    {
+        # 自动加载composer包(程序初始化时，默认不加载，影响性能)
+        autoloadComposer();
+    }
+
+    /**
      * log使用方法示例
      * 更多Seaslog使用方法，请参考扩展
      * @link   https://www.php.net/manual/zh/book.seaslog.php

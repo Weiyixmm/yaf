@@ -91,6 +91,18 @@ if (!function_exists('registory')) {
     }
 }
 
+if (!function_exists('import')) {
+    /**
+     * 包含文件
+     * @author liyw<2021-02-04>
+     * @param $path
+     */
+    function import($path)
+    {
+        \Yaf\Loader::import($path);
+    }
+}
+
 if (!function_exists('config')) {
     /**
      * 返回配置数据
@@ -138,5 +150,16 @@ if (!function_exists('outputError')) {
     function outputError($responseStatus = [], string $data = '')
     {
         response()->outputError($responseStatus, $data);
+    }
+}
+
+if (!function_exists('autoloadComposer')) {
+    /**
+     * 自动加载composer包
+     * @author liyw<2021-03-03>
+     */
+    function autoloadComposer()
+    {
+        import(APPLICATION_PATH . '/vendor/autoload.php');
     }
 }

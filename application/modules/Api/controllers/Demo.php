@@ -34,19 +34,15 @@ class DemoController extends BaseApi
     }
 
     /**
-     * json数据传输使用示例
-     * {
-     *     "id": 1,
-     *     "name": "weiyi"
-     * }
+     * 请求参数使用实例
      * @author liyw<2021-12-30>
      */
-    public function showUsageForJsonInputAction()
+    public function showUsageForInputAction()
     {
-        $inputJson = $this->input('json.');
+        $inputJson = $this->input();
 
-        $id   = $this->input('json.id', 1, 'int');
-        $name = $this->input('json.name', '', 'string');
+        $id   = $this->input('id', 1, 'int');
+        $name = $this->input('name', '', 'string');
 
         $this->outputSuccess(['json_data' => $inputJson, 'id' => $id, 'name' => $name]);
     }

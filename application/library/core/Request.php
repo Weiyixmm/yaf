@@ -20,43 +20,34 @@ class Request
 
     /**
      * 参数获取
-     * @author liyw<2020-11-17>
-     * @param string $name    参数名称(eg: json.|json.id|id)
-     *                        "json."，返回json转换的数组;
-     *                        "json.id"，返回数组中的值
-     *                        body 体为json，使用"json."，如果为xml，使用"xml."(自行实现)
-     * @param null   $default 默认值
-     * @param null   $type    返回值类型，NULL不做转换
-     * @param bool   $isMust  是否是必传参数(true，默认值应为NUll(default = null))
-     * @param string $msg     string|array(string: 错误信息，array: ['errorcode', 'errormsg'])
-     * @return bool|mixed|null
+     * @author liyw<2022-08-25>
+     * @param string $name
+     * @param null   $default
+     * @param null   $type
+     * @param bool   $isMust
+     * @param string $msg
+     * @return array|mixed|null
      */
     public function input(string $name = '', $default = null, $type = null, bool $isMust = false, string $msg = '')
     {
-        if (FALSE === strpos($name, '.')) {
-            $param = $this->_request->get($name, $default);
-        } else {
-            list($rawType, $rawName) = explode('.', $name, 2);
+        # 获取所有类型的请求数据
+        $file   = $this->_request->getFiles();
+        $params = $this->_request->getParams();
+        $query  = $this->_request->getQuery();
+        $post   = $this->_request->getPost() ?: (json_decode($this->_request->getRaw(), true) ?: []);
 
-            $rawVal = $this->_request->getRaw();
+        # 合并数据
+        $input = array_merge($post, $params, $query, $file);
 
-            switch (strtolower($rawType)) {
-                default :
-                case 'json':
-                    $parseRaw = json_decode($rawVal, true);
-                    break;
-                case 'xml':
-                    # code...
-                    break;
-            }
-
-            if (empty($rawName)) {
-                return $parseRaw ?? [];
-            } else {
-                $param = ($parseRaw[$rawName] ?? '') ?: $default;
-            }
+        # 没有字段，返回所有数据
+        if (empty($name)) {
+            return $input;
         }
 
+        # 获取字段值
+        $param = $input[$name] ?? $default;
+
+        # 必传参数过滤
         if ($isMust && is_null($param ?? null)) {
             if (empty($msg)) {
                 outputError([ResponseStatus::INPUT_ERROR_CODE, ResponseStatus::INPUT_ERROR_MSG]);
@@ -67,6 +58,7 @@ class Request
             }
         }
 
+        # 类型转换
         switch ($type) {
             default:
                 break;

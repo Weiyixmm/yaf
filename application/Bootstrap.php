@@ -153,6 +153,19 @@ if (!function_exists('outputError')) {
     }
 }
 
+if (!function_exists('outputSuccess')) {
+    /**
+     * 响应成功
+     * @author liyw<2022-07-31>
+     * @param              $data
+     * @param array|string $responseStatus
+     */
+    function outputSuccess($data, $responseStatus = [])
+    {
+        response()->outputSuccess($data, $responseStatus);
+    }
+}
+
 if (!function_exists('autoloadComposer')) {
     /**
      * 自动加载composer包

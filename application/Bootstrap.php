@@ -67,7 +67,9 @@ define('NOW', time());
 define('NOW_DATETIME', date('Y-m-d H:i:s', NOW));
 define('NOW_DATE', date('Y-m-d', strtotime(NOW_DATETIME)));
 
-# 全局方法
+/**
+ * 系统全局方法，建议不要修改
+ */
 if (!function_exists('app')) {
     /**
      * 返回Application实例
@@ -141,6 +143,20 @@ if (!function_exists('resopnse')) {
     }
 }
 
+if (!function_exists('autoloadComposer')) {
+    /**
+     * 自动加载composer包
+     * @author liyw<2021-03-03>
+     */
+    function autoloadComposer()
+    {
+        import(APPLICATION_PATH . '/vendor/autoload.php');
+    }
+}
+
+/**
+ * 自定义方法，可以自行添加
+ */
 if (!function_exists('outputError')) {
     /**
      * 响应错误
@@ -163,16 +179,5 @@ if (!function_exists('outputSuccess')) {
     function outputSuccess($data, $responseStatus = [])
     {
         response()->outputSuccess($data, $responseStatus);
-    }
-}
-
-if (!function_exists('autoloadComposer')) {
-    /**
-     * 自动加载composer包
-     * @author liyw<2021-03-03>
-     */
-    function autoloadComposer()
-    {
-        import(APPLICATION_PATH . '/vendor/autoload.php');
     }
 }

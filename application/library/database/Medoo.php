@@ -10,10 +10,10 @@
 
 namespace app\library\database;
 
-use PDO;
 use Exception;
-use PDOException;
 use InvalidArgumentException;
+use PDO;
+use PDOException;
 use Yaf\Bootstrap_Abstract;
 
 class Raw
@@ -65,7 +65,7 @@ class Medoo extends Bootstrap_Abstract
             $this->logging = $options['logging'];
         }
 
-        $option   = isset($options['option']) ? $options['option'] : [];
+        $option   = $options['option'] ?? [];
         $commands = (isset($options['command']) && is_array($options['command'])) ? $options['command'] : [];
 
         switch ($this->type) {
@@ -256,7 +256,7 @@ class Medoo extends Bootstrap_Abstract
         $driver = $attr['driver'];
 
         if (!in_array($driver, PDO::getAvailableDrivers())) {
-            throw new InvalidArgumentException("Unsupported PDO driver: {$driver}");
+            throw new InvalidArgumentException("Unsupported PDO driver: $driver");
         }
 
         unset($attr['driver']);
@@ -284,8 +284,8 @@ class Medoo extends Bootstrap_Abstract
         try {
             $this->pdo = new PDO(
                 $dsn,
-                isset($options['username']) ? $options['username'] : null,
-                isset($options['password']) ? $options['password'] : null,
+                $options['username'] ?? null,
+                $options['password'] ?? null,
                 $option
             );
 
@@ -1630,5 +1630,20 @@ class Medoo extends Bootstrap_Abstract
         $output['dsn'] = $this->dsn;
 
         return $output;
+    }
+
+    /**
+     * 生成 limit 条件(自己封装的方法，不属于Medoo)
+     * @param null $page
+     * @param null $pageSize
+     * @return array
+     */
+    protected function limitAttr($page = null, $pageSize = null): array
+    {
+        if (!isset($page, $pageSize)) {
+            return [];
+        }
+
+        return ['LIMIT' => [($page - 1) * $pageSize, $pageSize]];
     }
 }

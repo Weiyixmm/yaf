@@ -74,6 +74,9 @@ class Request
             case 'bool':
                 settype($param, 'bool');
                 break;
+            case 'json':
+                $param = json_encode($param, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                break;
         }
 
         return $param;

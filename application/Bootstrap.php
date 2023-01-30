@@ -181,3 +181,20 @@ if (!function_exists('outputSuccess')) {
         response()->outputSuccess($data, $responseStatus);
     }
 }
+
+if (!function_exists('input')) {
+    /**
+     * 参数获取
+     * @author liyw<2022-08-26>
+     * @param string $name
+     * @param null   $default
+     * @param null   $type
+     * @param bool   $isMust
+     * @param string $msg
+     * @return array|mixed|null
+     */
+    function input(string $name = '', $default = null, $type = null, bool $isMust = false, string $msg = '')
+    {
+        return request()->input($name, $default, $type, $isMust, $msg);
+    }
+}

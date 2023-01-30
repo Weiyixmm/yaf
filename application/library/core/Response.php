@@ -32,17 +32,13 @@ class Response
         $responseStatus = is_array($responseStatus) ? $responseStatus : [ResponseStatus::NORMAL_ERROR_CODE, $responseStatus];
 
         $out = [
-            'statusCode' => $responseStatus[0] ?? ResponseStatus::NORMAL_ERROR_CODE,
-            'msg'        => $responseStatus[1] ?? ResponseStatus::NORMAL_ERROR_MSG,
-            'time'       => NOW,
-            'data'       => is_bool($data) ? $data : ($data ?: []),
+            'code' => $responseStatus[0] ?? ResponseStatus::NORMAL_ERROR_CODE,
+            'msg'  => $responseStatus[1] ?? ResponseStatus::NORMAL_ERROR_MSG,
+            'time' => NOW,
+            'data' => is_bool($data) ? $data : ($data ?: []),
         ];
 
-        $this->setHeaders($header);
-
-        $this->_response->setBody(json_encode($out, JSON_UNESCAPED_UNICODE));
-        $this->_response->response();
-        exit();
+        $this->output(json_encode($out, JSON_UNESCAPED_UNICODE), $header);
     }
 
     /**
@@ -51,22 +47,18 @@ class Response
      * @param array|string $responseStatus
      * @param array        $header
      */
-    public function outputSuccess($data, $responseStatus, array $header = [])
+    public function outputSuccess($data, $responseStatus = [], array $header = [])
     {
         $responseStatus = is_array($responseStatus) ? $responseStatus : [ResponseStatus::NORMAL_SUCCESS_CODE, $responseStatus];
 
         $out = [
-            'statusCode' => $responseStatus[0] ?? ResponseStatus::NORMAL_SUCCESS_CODE,
-            'msg'        => $responseStatus[1] ?? ResponseStatus::NORMAL_SUCCESS_MSG,
-            'time'       => NOW,
-            'data'       => is_bool($data) ? $data : ($data ?: []),
+            'code' => $responseStatus[0] ?? ResponseStatus::NORMAL_SUCCESS_CODE,
+            'msg'  => $responseStatus[1] ?? ResponseStatus::NORMAL_SUCCESS_MSG,
+            'time' => NOW,
+            'data' => is_bool($data) ? $data : ($data ?: []),
         ];
 
-        $this->setHeaders($header);
-
-        $this->_response->setBody(json_encode($out, JSON_UNESCAPED_UNICODE));
-        $this->_response->response();
-        exit();
+        $this->output(json_encode($out, JSON_UNESCAPED_UNICODE), $header);
     }
 
     /**
@@ -74,12 +66,9 @@ class Response
      * @param       $data
      * @param array $header
      */
-    public function output($data, array $header = [])
+    private function output($data, array $header = [])
     {
-        # 存在header，设置header
-        if ($header) {
-            $this->setHeaders($header);
-        }
+        $this->setHeaders($header);
 
         $this->_response->setBody($data);
         $this->_response->response();
@@ -90,20 +79,20 @@ class Response
      * 设置Header
      * @param array $header
      */
-    private function setHeaders(array $header = [])
+    public function setHeaders(array $header = [])
     {
-        if (!empty($header)) {
-            foreach ($header as $type => $value) {
+        # cros、json header
+        $crosHeader = [
+            'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT',
+            'Access-Control-Allow-Origin'  => '*',
+            'Content-Type'                 => 'application/json; charset=utf-8',
+        ];
+
+        if ($handleHeader = ($header ?: $crosHeader)) {
+            foreach ($handleHeader as $type => $value) {
                 $this->_response->setHeader($type, $value);
             }
-        } else {
-            $this->_response->setHeader(
-                'Access-Control-Allow-Headers',
-                'Origin, X-Requested-With, Content-Type, Accept'
-            );
-            $this->_response->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT');
-            $this->_response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->_response->setHeader('Content-Type', 'application/json; charset=utf-8');
         }
     }
 }
